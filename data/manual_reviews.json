@@ -1,0 +1,65 @@
+[
+  {
+    "case_id": "CASE-01",
+    "status": "Accepted",
+    "revised_fix": "",
+    "engineer_note": "",
+    "timestamp": "2026-08-23T22:56:56.443789"
+  },
+  {
+    "case_id": "CUSTOM-01",
+    "status": "Edited",
+    "revised_fix": "configure terminal\ninterface GigabitEthernet0/1\nswitchport trunk native vlan 99",
+    "engineer_note": "trunking  at  vlan 99",
+    "timestamp": "2026-08-24T11:10:27.574001"
+  },
+  {
+    "case_id": "CUSTOM-03",
+    "status": "Accepted",
+    "revised_fix": "",
+    "engineer_note": "Accepted by human engineer.",
+    "timestamp": "2026-08-24T12:29:08.763996"
+  },
+  {
+    "case_id": "CASE-02",
+    "status": "Accepted",
+    "revised_fix": "",
+    "engineer_note": "Accepted by human engineer.",
+    "timestamp": "2026-08-24T14:28:54.318198"
+  },
+  {
+    "case_id": "CUSTOM-02",
+    "status": "Accepted",
+    "revised_fix": "",
+    "engineer_note": "Accepted by human engineer.",
+    "timestamp": "2026-08-24T14:28:55.091370"
+  },
+  {
+    "case_id": "CUSTOM-04",
+    "status": "Accepted",
+    "revised_fix": "",
+    "engineer_note": "Accepted by human engineer.",
+    "timestamp": "2026-08-24T14:28:56.459420"
+  },
+  {
+    "case_id": "CUSTOM-05",
+    "status": "Accepted",
+    "revised_fix": "",
+    "engineer_note": "Accepted by human engineer.",
+    "timestamp": "2026-08-24T14:28:56.842738"
+  },
+  {
+    "case_id": "CUSTOM-06",
+    "status": "Accepted",
+    "revised_fix": "",
+    "engineer_note": "Accepted by human engineer.",
+    "timestamp": "2026-08-24T14:28:57.138675"
+  },
+  {
+    "case_id": "CUSTOM-07",
+    "status": "Accepted",
+    "revised_fix": "",
+    "engineer_note": "Accepted by human engineer.",
+    "timestamp": "2026-08-24T14:28:58.023584"
+  }
+]

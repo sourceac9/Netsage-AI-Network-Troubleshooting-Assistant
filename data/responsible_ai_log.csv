@@ -1,0 +1,6 @@
+case_id,human_verdict,safety_rationale_and_learnings,timestamp
+CASE-01,Edited,The AI correctly identified the wrong VLAN on Fa0/1 but recommended a reload. Corrected the configuration step to avoid network downtime, proving human oversight is vital for safety.,2026-08-25T12:00:00
+CASE-02,Edited,The AI suggested deleting the default VLAN. Replaced with creating VLAN 30 to prevent clearing traffic for other interface ports.,2026-08-25T12:10:00
+CASE-03,Rejected,The AI diagnosed a duplex mismatch when the interface was shut down. Rejected the diagnosis as it was misleading and incorrect.,2026-08-25T12:20:00
+CASE-04,Edited,Modified the proposed NAT configuration to specify the correct inside and outside interfaces to ensure traffic routing works without loop issues.,2026-08-25T12:30:00
+CASE-05,Edited,Adjusted the subnet mask mismatch remediation to ensure it aligns with the network architecture design, preventing route leaks.,2026-08-25T12:40:00

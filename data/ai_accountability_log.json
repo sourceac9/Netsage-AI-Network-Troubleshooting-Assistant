@@ -1,0 +1,9 @@
+[
+  {
+    "case_id": "CUSTOM-01",
+    "ai_said": "A Native VLAN mismatch is present on the trunk link between Switch-1 and Switch-2 on interface GigabitEthernet0/1. Switch-1 is configured to use VLAN 10 as its native VLAN, whereas Switch-2 is configured to use VLAN 99. This leads to configuration inconsistency, CDP warnings, and potential leakage of VLAN 10 management traffic.",
+    "correct_answer": "configure terminal\ninterface GigabitEthernet0/1\nswitchport trunk native vlan 99",
+    "why_ai_was_wrong": "trunking  at  vlan 99",
+    "timestamp": "2026-08-24T11:10:27.574001"
+  }
+]

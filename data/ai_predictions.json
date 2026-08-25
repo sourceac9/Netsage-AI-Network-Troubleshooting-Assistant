@@ -1,0 +1,370 @@
+[
+  {
+    "case_id": "CASE-01",
+    "deterministic_findings": [
+      {
+        "rule_key": "R00_NO_FAULTS",
+        "summary": "No deterministic faults found.",
+        "urgency": "Low",
+        "network_layer": "N/A",
+        "domain": "GENERAL",
+        "details": "The heuristic regex engine did not detect any basic configuration errors.",
+        "matched_evidence": [],
+        "remediation": "None"
+      }
+    ],
+    "ai_diagnosis": {
+      "root_cause": "PC-A is connected to interface FastEthernet0/1, which is misconfigured to be in VLAN 20 (Marketing) instead of VLAN 10 (Sales). This isolates PC-A from the Sales Server which is on VLAN 10.",
+      "osi_layer": "Layer 2 - Data Link",
+      "confidence": "High",
+      "evidence": [
+        "20   Marketing                        active    Fa0/1",
+        "Access Mode VLAN: 20 (Marketing)"
+      ],
+      "concept_tag": "VLAN",
+      "next_command": "show running-config interface FastEthernet0/1",
+      "fix_steps": [
+        "configure terminal",
+        "interface FastEthernet0/1",
+        "switchport access vlan 10",
+        "end"
+      ],
+      "safety_assessment": "The remediation only modifies the VLAN assignment on interface FastEthernet0/1. The blast radius is extremely localized; only PC-A will experience a brief port state transition. No other interfaces or network services will be impacted."
+    },
+    "evaluation": {
+      "layer_match": true,
+      "concept_match": true,
+      "evidence_grounded_pct": 100.0,
+      "fault_overlap_score": 32.14,
+      "overall_agreement": true
+    }
+  },
+  {
+    "case_id": "CUSTOM-01",
+    "deterministic_findings": [
+      {
+        "rule_key": "R03_NATIVE_VLAN",
+        "summary": "Native VLAN mismatch on GigabitEthernet0/1",
+        "urgency": "High",
+        "network_layer": "Layer 2 - Data Link",
+        "domain": "VLAN",
+        "details": "Native VLAN is 10 but neighbor expects differently.",
+        "matched_evidence": [
+          "Native VLAN mismatch discovered on GigabitEthernet0/1 (10)"
+        ],
+        "remediation": "interface GigabitEthernet0/1\n switchport trunk native vlan <correct_vlan_id>"
+      }
+    ],
+    "ai_diagnosis": {
+      "root_cause": "A Native VLAN mismatch is present on the trunk link between Switch-1 and Switch-2 on interface GigabitEthernet0/1. Switch-1 is configured to use VLAN 10 as its native VLAN, whereas Switch-2 is configured to use VLAN 99. This leads to configuration inconsistency, CDP warnings, and potential leakage of VLAN 10 management traffic.",
+      "osi_layer": "Layer 2 - Data Link",
+      "confidence": "High",
+      "evidence": [
+        "Gi0/1       on           802.1q         trunking      10",
+        "%CDP-4-NATIVE_VLAN_MISMATCH: Native VLAN mismatch discovered on GigabitEthernet0/1 (10), with Switch-2 GigabitEthernet0/1 (99)."
+      ],
+      "concept_tag": "SWITCHING",
+      "next_command": "show interfaces GigabitEthernet0/1 switchport",
+      "fix_steps": [
+        "configure terminal",
+        "interface GigabitEthernet0/1",
+        "switchport trunk native vlan 99"
+      ],
+      "safety_assessment": "Changing the native VLAN on a live trunk interface resolves the mismatch and prevents frames from being leaked across different broadcast domains. This operation may cause a brief Spanning Tree Protocol (STP) recalculation on that link, resulting in minor, transient traffic interruption on the affected port, but has no destructive impact on the rest of the network."
+    },
+    "evaluation": {
+      "layer_match": false,
+      "concept_match": false,
+      "evidence_grounded_pct": 100.0,
+      "fault_overlap_score": 0.0,
+      "overall_agreement": false
+    }
+  },
+  {
+    "case_id": "CASE-02",
+    "deterministic_findings": [
+      {
+        "rule_key": "R00_NO_FAULTS",
+        "summary": "No deterministic faults found.",
+        "urgency": "Low",
+        "network_layer": "N/A",
+        "domain": "GENERAL",
+        "details": "The heuristic regex engine did not detect any basic configuration errors.",
+        "matched_evidence": [],
+        "remediation": "None"
+      }
+    ],
+    "ai_diagnosis": {
+      "root_cause": "VLAN 30 is missing from the VLAN database on Switch-2. Consequently, interface FastEthernet0/5, which is assigned to VLAN 30, is marked as 'Access Mode VLAN: 30 (Inactive)' and cannot forward traffic.",
+      "osi_layer": "Layer 2 - Data Link",
+      "confidence": "High",
+      "evidence": [
+        "Access Mode VLAN: 30 (Inactive)",
+        "10   Sales                            active    ",
+        "20   Marketing                        active    "
+      ],
+      "concept_tag": "VLAN",
+      "next_command": "show vlan brief",
+      "fix_steps": [
+        "configure terminal",
+        "vlan 30",
+        "name Engineering",
+        "end"
+      ],
+      "safety_assessment": "Creating the missing VLAN 30 is a standard administrative task. It is completely safe, has zero blast radius, and will immediately transition FastEthernet0/5 to an active state, restoring connectivity for PC-1 without disrupting existing VLAN 10 or 20 traffic."
+    },
+    "human_guidance": "after configuring at vlan 30",
+    "evaluation": {
+      "layer_match": true,
+      "concept_match": true,
+      "evidence_grounded_pct": 100.0,
+      "fault_overlap_score": 14.29,
+      "overall_agreement": true
+    }
+  },
+  {
+    "case_id": "CUSTOM-02",
+    "deterministic_findings": [
+      {
+        "rule_key": "R00_NO_FAULTS",
+        "summary": "No deterministic faults found.",
+        "urgency": "Low",
+        "network_layer": "N/A",
+        "domain": "GENERAL",
+        "details": "The heuristic regex engine did not detect any basic configuration errors.",
+        "matched_evidence": [],
+        "remediation": "None"
+      }
+    ],
+    "ai_diagnosis": {
+      "root_cause": "There is an OSPF area mismatch between R1 and R2. R1 is configured to use Area 0 for the 192.168.12.0/24 subnet, while R2 is configured to use Area 1. OSPF neighbor adjacencies can only form if both routers agree on the area ID for their common segment.",
+      "osi_layer": "Layer 3 - Network",
+      "confidence": "High",
+      "evidence": [
+        "network 192.168.12.0 0.0.0.255 area 0",
+        "network 192.168.12.0 0.0.0.255 area 1"
+      ],
+      "concept_tag": "ROUTING",
+      "next_command": "show ip ospf interface Gi0/1",
+      "fix_steps": [
+        "configure terminal",
+        "router ospf 1",
+        "no network 192.168.12.0 0.0.0.255 area 1",
+        "network 192.168.12.0 0.0.0.255 area 0",
+        "end"
+      ],
+      "safety_assessment": "Correcting the OSPF area configuration on R2 for the 192.168.12.0/24 network has a minimal blast radius. Since the neighbor relationship is currently down, no active traffic is traversing this link, and modifying the configuration will not cause any data plane disruption."
+    },
+    "human_guidance": "Note the OSPF area configurations in show run: R1 is configured with Area 0, while R2 is configured with Area 1 on the 192.168.12.0 subnet. Suggest a fix for the area mismatch on R2.\n",
+    "evaluation": {
+      "layer_match": true,
+      "concept_match": true,
+      "evidence_grounded_pct": 100.0,
+      "fault_overlap_score": 0.0,
+      "overall_agreement": true
+    }
+  },
+  {
+    "case_id": "CUSTOM-03",
+    "deterministic_findings": [
+      {
+        "rule_key": "R01_ADMIN_DOWN",
+        "summary": "Interface FastEthernet0/5 is shut down",
+        "urgency": "High",
+        "network_layer": "Layer 1 - Physical",
+        "domain": "SWITCHING",
+        "details": "The interface is explicitly shut down by an administrator.",
+        "matched_evidence": [
+          "FastEthernet0/5 is administratively down, line protocol is down"
+        ],
+        "remediation": "interface FastEthernet0/5\n no shutdown"
+      }
+    ],
+    "ai_diagnosis": {
+      "root_cause": "The interface FastEthernet0/5 is administratively shut down, preventing Server-A from establishing physical link and communicating. Additionally, there is a potential duplex mismatch risk: the status configuration is set to 'auto' but the interface is currently operating at 'Half-duplex', which could lead to collision errors once the interface is brought up if the server is statically configured for full duplex.",
+      "osi_layer": "Layer 1 - Physical",
+      "confidence": "High",
+      "evidence": [
+        "FastEthernet0/5 is administratively down, line protocol is down (disabled)",
+        "disabled     10           auto   auto 10/100BaseTX",
+        "Half-duplex, 100Mb/s, media type is 10/100BaseTX"
+      ],
+      "concept_tag": "SWITCHING",
+      "next_command": "show running-config interface FastEthernet0/5",
+      "fix_steps": [
+        "configure terminal",
+        "interface FastEthernet0/5",
+        "no shutdown",
+        "duplex auto",
+        "speed auto"
+      ],
+      "safety_assessment": "Enabling this port and ensuring auto-negotiation only impacts Server-A. There is no risk of a wider network outage or broadcast storm. Verifying duplex settings prevents future packet loss and collision errors on this specific access port."
+    },
+    "human_guidance": "Verify if we also need to check the speed/duplex setting on FastEthernet0/5 in case of collision errors after bringing it up.\n",
+    "evaluation": {
+      "layer_match": true,
+      "concept_match": true,
+      "evidence_grounded_pct": 100.0,
+      "fault_overlap_score": 0.0,
+      "overall_agreement": true
+    }
+  },
+  {
+    "case_id": "CUSTOM-04",
+    "deterministic_findings": [
+      {
+        "rule_key": "R19_INTER_VLAN_ACL_SYMPTOM",
+        "summary": "Likely inter-VLAN routing or ACL issue at Layer 3/4",
+        "urgency": "Medium",
+        "network_layer": "Layer 3/4 - Network/Transport",
+        "domain": "ROUTING",
+        "details": "PC gets IP and gateway ping works, but cannot reach server in target VLAN.",
+        "matched_evidence": [
+          "PC gets IP but cannot reach server in VLAN 30; gateway ping works"
+        ],
+        "remediation": "Next commands: show ip route, show access-lists, show interfaces trunk. Confidence: medium until route/ACL evidence is shown."
+      }
+    ],
+    "ai_diagnosis": {
+      "root_cause": "The host can successfully obtain an IP address and ping its default gateway, indicating local Layer 2 and Layer 3 connectivity is functional. However, the inability to reach the server in VLAN 30 suggests a failure in inter-VLAN routing, a missing route to the VLAN 30 subnet, or an Access Control List (ACL) blocking transit traffic between the VLANs.",
+      "osi_layer": "Layer 3 - Network",
+      "confidence": "Medium",
+      "evidence": [],
+      "concept_tag": "ROUTING",
+      "next_command": "show ip route",
+      "fix_steps": [
+        "configure terminal",
+        "interface vlan 30",
+        "ip address <ip_address> <subnet_mask>",
+        "no shutdown"
+      ],
+      "safety_assessment": "Diagnostic commands like 'show ip route' have zero blast radius. Modifying routing configurations or ACLs has a low-to-medium blast radius; verify subnets carefully to avoid traffic disruption."
+    },
+    "human_guidance": "",
+    "evaluation": {
+      "layer_match": false,
+      "concept_match": false,
+      "evidence_grounded_pct": 0.0,
+      "fault_overlap_score": 0.0,
+      "overall_agreement": false
+    }
+  },
+  {
+    "case_id": "CUSTOM-05",
+    "deterministic_findings": [
+      {
+        "rule_key": "R00_NO_FAULTS",
+        "summary": "No deterministic faults found.",
+        "urgency": "Low",
+        "network_layer": "N/A",
+        "domain": "GENERAL",
+        "details": "The heuristic regex engine did not detect any basic configuration errors.",
+        "matched_evidence": [],
+        "remediation": "None"
+      }
+    ],
+    "ai_diagnosis": {
+      "root_cause": "Since the PC successfully receives an IP address and can ping its default gateway, local Layer 2 and Layer 3 connectivity to the gateway is functional. The inability to reach the server in VLAN 30 suggests a potential inter-VLAN routing failure, a missing SVI/subinterface for VLAN 30 on the gateway, an ACL blocking traffic, or VLAN 30 not being allowed on trunk ports between the switches.",
+      "osi_layer": "Layer 3 - Network",
+      "confidence": "Medium",
+      "evidence": [],
+      "concept_tag": "ROUTING",
+      "next_command": "show ip route",
+      "fix_steps": [
+        "configure terminal",
+        "interface Vlan30",
+        "no shutdown",
+        "ip address <gateway_ip> <subnet_mask>"
+      ],
+      "safety_assessment": "Running diagnostic commands like 'show ip route' has zero impact. If configuring SVIs or routing interfaces, ensure the IP addresses do not conflict with existing production devices to prevent routing loops or IP conflicts."
+    },
+    "human_guidance": "",
+    "evaluation": {
+      "layer_match": false,
+      "concept_match": false,
+      "evidence_grounded_pct": 0.0,
+      "fault_overlap_score": 0.0,
+      "overall_agreement": false
+    }
+  },
+  {
+    "case_id": "CUSTOM-06",
+    "deterministic_findings": [
+      {
+        "rule_key": "R00_NO_FAULTS",
+        "summary": "No deterministic faults found.",
+        "urgency": "Low",
+        "network_layer": "N/A",
+        "domain": "GENERAL",
+        "details": "The heuristic regex engine did not detect any basic configuration errors.",
+        "matched_evidence": [],
+        "remediation": "None"
+      }
+    ],
+    "ai_diagnosis": {
+      "root_cause": "The Guest Wi-Fi network lacks proper traffic filtering (such as an Access Control List) or network segmentation, allowing routing and communication between the Guest subnet and the internal server zone.",
+      "osi_layer": "Layer 3 - Network",
+      "confidence": "Medium",
+      "evidence": [],
+      "concept_tag": "ACL",
+      "next_command": "show access-lists",
+      "fix_steps": [
+        "configure terminal",
+        "ip access-list extended BLOCK_GUEST_TO_INTERNAL",
+        "deny ip <guest_subnet> <guest_wildcard> <internal_server_ip> <host_or_wildcard>",
+        "permit ip any any",
+        "interface <guest_gateway_interface>",
+        "ip access-group BLOCK_GUEST_TO_INTERNAL in"
+      ],
+      "safety_assessment": "Creating and applying an ACL specifically to the inbound direction of the guest interface restricts guest traffic without impacting production or internal network routing. Ensure 'permit ip any any' is included at the end of the ACL to avoid blocking legitimate internet access for guests."
+    },
+    "human_guidance": "",
+    "evaluation": {
+      "layer_match": false,
+      "concept_match": false,
+      "evidence_grounded_pct": 0.0,
+      "fault_overlap_score": 0.0,
+      "overall_agreement": false
+    }
+  },
+  {
+    "case_id": "CUSTOM-07",
+    "deterministic_findings": [
+      {
+        "rule_key": "R00_NO_FAULTS",
+        "summary": "No deterministic faults found.",
+        "urgency": "Low",
+        "network_layer": "N/A",
+        "domain": "GENERAL",
+        "details": "The heuristic regex engine did not detect any basic configuration errors.",
+        "matched_evidence": [],
+        "remediation": "None"
+      }
+    ],
+    "ai_diagnosis": {
+      "root_cause": "The Guest Wi-Fi network is able to reach the internal server likely due to missing or misconfigured Access Control Lists (ACLs) or firewall policies on the default gateway. Without an explicit deny rule blocking traffic from the Guest VLAN to the Internal Server VLAN, standard inter-VLAN routing allows unrestricted communication between these subnets.",
+      "osi_layer": "Layer 3 - Network",
+      "confidence": "Low",
+      "evidence": [],
+      "concept_tag": "ACL",
+      "next_command": "show ip access-lists",
+      "fix_steps": [
+        "configure terminal",
+        "ip access-list extended BLOCK_GUEST_TO_INTERNAL",
+        "deny ip 192.168.20.0 0.0.0.255 10.0.0.0 0.0.0.255",
+        "permit ip any any",
+        "interface vlan 20",
+        "ip access-group BLOCK_GUEST_TO_INTERNAL in"
+      ],
+      "safety_assessment": "The blast radius of this change is limited to the Guest Wi-Fi VLAN. Implementing the ACL restricts Guest access to the internal network while keeping their internet access intact. There is no risk of disruption to internal production users."
+    },
+    "human_guidance": "",
+    "evaluation": {
+      "layer_match": true,
+      "concept_match": true,
+      "evidence_grounded_pct": 100.0,
+      "fault_overlap_score": 100.0,
+      "overall_agreement": true
+    }
+  }
+]
